@@ -11,7 +11,7 @@
 | Epic # | Epic | Priority | Stories |
 |--------|------|----------|---------|
 | E-0 | Claude Code Setup | P0 | 5 |
-| E-1 | Foundation & Remote State | P0 | 5 |
+| E-1 | Foundation & Remote State ✅ Done | P0 | 5 |
 | E-2 | Networking (VPC) | P0 | 5 |
 | E-3 | EKS Cluster | P0 | 7 |
 | E-4 | Container Registry (ECR) | P0 | 5 |
@@ -194,6 +194,7 @@ Start a new Claude Code session in petclinic-platform/ and verify the full confi
 **Description:** Set up Terraform project structure, remote state backend (S3 + DynamoDB), provider configuration, and environment layout. This is the foundation everything else builds on.
 **Blocked by:** None
 **Blocks:** E-2, E-3, E-4, E-5, E-6, E-7
+**Status:** ✅ Done — merged in PR #2 (state backend live in ap-southeast-2)
 
 ---
 
@@ -204,6 +205,7 @@ Start a new Claude Code session in petclinic-platform/ and verify the full confi
 **Epic:** E-1 Foundation & Remote State
 **Story Points:** 2
 **Labels:** terraform, foundation
+**Status:** ✅ Done
 
 **Description:**
 Create the Terraform directory structure in petclinic-platform with separate environment root modules and shared reusable modules.
@@ -211,12 +213,12 @@ Create the Terraform directory structure in petclinic-platform with separate env
 **Technical Spec:** [General Project Parameters](./technical-spec.md#general-project-parameters), [Terraform Modules](./technical-spec.md#terraform-modules)
 
 **Acceptance Criteria:**
-- [ ] `terraform/environments/dev/` directory exists with main.tf, variables.tf, outputs.tf, backend.tf, terraform.tfvars
-- [ ] `terraform/environments/prod/` directory exists with same files
-- [ ] `terraform/modules/` directory exists with subdirectories: vpc, eks, ecr, rds, dns, secrets, observability
-- [ ] Each module dir has placeholder main.tf, variables.tf, outputs.tf
-- [ ] .gitignore includes .terraform/, *.tfstate, *.tfstate.backup, *.tfvars (sensitive), plan.out, .env, *.pem, *.key, IDE files, OS files
-- [ ] .terraform.lock.hcl is NOT in .gitignore (must be committed for reproducible builds)
+- [x] `terraform/environments/dev/` directory exists with main.tf, variables.tf, outputs.tf, backend.tf, terraform.tfvars
+- [x] `terraform/environments/prod/` directory exists with same files
+- [x] `terraform/modules/` directory exists with subdirectories: vpc, eks, ecr, rds, dns, secrets, observability
+- [x] Each module dir has placeholder main.tf, variables.tf, outputs.tf
+- [x] .gitignore includes .terraform/, *.tfstate, *.tfstate.backup, *.tfvars (sensitive), plan.out, .env, *.pem, *.key, IDE files, OS files
+- [x] .terraform.lock.hcl is NOT in .gitignore (must be committed for reproducible builds)
 
 ---
 
@@ -227,6 +229,7 @@ Create the Terraform directory structure in petclinic-platform with separate env
 **Epic:** E-1 Foundation & Remote State
 **Story Points:** 3
 **Labels:** terraform, foundation, aws
+**Status:** ✅ Done
 
 **Description:**
 Create a bootstrap script that provisions the S3 bucket (versioning enabled, encryption enabled) and DynamoDB table (LockID partition key) used for Terraform remote state. This is a one-time setup done outside Terraform itself.
@@ -234,13 +237,13 @@ Create a bootstrap script that provisions the S3 bucket (versioning enabled, enc
 **Technical Spec:** [Terraform State Backend](./technical-spec.md#terraform-state-backend)
 
 **Acceptance Criteria:**
-- [ ] `scripts/bootstrap-state.sh` script created
-- [ ] S3 bucket created with versioning enabled
-- [ ] S3 bucket has server-side encryption (AES256 or KMS)
-- [ ] S3 bucket has public access blocked (all 4 settings)
-- [ ] DynamoDB table created with `LockID` as partition key (String)
-- [ ] Script is idempotent (safe to run multiple times)
-- [ ] Script accepts region as parameter (default: ap-southeast-2)
+- [x] `scripts/bootstrap-state.sh` script created
+- [x] S3 bucket created with versioning enabled
+- [x] S3 bucket has server-side encryption (AES256 or KMS)
+- [x] S3 bucket has public access blocked (all 4 settings)
+- [x] DynamoDB table created with `LockID` as partition key (String)
+- [x] Script is idempotent (safe to run multiple times)
+- [x] Script accepts region as parameter (default: ap-southeast-2)
 
 ---
 
@@ -251,6 +254,7 @@ Create a bootstrap script that provisions the S3 bucket (versioning enabled, enc
 **Epic:** E-1 Foundation & Remote State
 **Story Points:** 2
 **Labels:** terraform, foundation
+**Status:** ✅ Done
 **Blocked by:** PETPLAT-2
 
 **Description:**
@@ -259,12 +263,12 @@ Configure the S3 backend in `terraform/environments/dev/backend.tf` pointing to 
 **Technical Spec:** [Terraform State Backend](./technical-spec.md#terraform-state-backend)
 
 **Acceptance Criteria:**
-- [ ] `backend.tf` configured with S3 backend
-- [ ] State key: `petclinic/dev/terraform.tfstate`
-- [ ] DynamoDB table referenced for locking
-- [ ] Encryption enabled
-- [ ] Region set to ap-southeast-2
-- [ ] `terraform init` succeeds
+- [x] `backend.tf` configured with S3 backend
+- [x] State key: `petclinic/dev/terraform.tfstate`
+- [x] DynamoDB table referenced for locking
+- [x] Encryption enabled
+- [x] Region set to ap-southeast-2
+- [x] `terraform init` succeeds
 
 ---
 
@@ -275,6 +279,7 @@ Configure the S3 backend in `terraform/environments/dev/backend.tf` pointing to 
 **Epic:** E-1 Foundation & Remote State
 **Story Points:** 1
 **Labels:** terraform, foundation
+**Status:** ✅ Done
 **Blocked by:** PETPLAT-2
 
 **Description:**
@@ -283,11 +288,11 @@ Configure the S3 backend in `terraform/environments/prod/backend.tf` with key `p
 **Technical Spec:** [Terraform State Backend](./technical-spec.md#terraform-state-backend)
 
 **Acceptance Criteria:**
-- [ ] `backend.tf` configured with S3 backend
-- [ ] State key: `petclinic/prod/terraform.tfstate`
-- [ ] DynamoDB table referenced for locking
-- [ ] Encryption enabled
-- [ ] `terraform init` succeeds
+- [x] `backend.tf` configured with S3 backend
+- [x] State key: `petclinic/prod/terraform.tfstate`
+- [x] DynamoDB table referenced for locking
+- [x] Encryption enabled
+- [x] `terraform init` succeeds
 
 ---
 
@@ -298,6 +303,7 @@ Configure the S3 backend in `terraform/environments/prod/backend.tf` with key `p
 **Epic:** E-1 Foundation & Remote State
 **Story Points:** 2
 **Labels:** terraform, foundation
+**Status:** ✅ Done
 
 **Description:**
 Set up provider configuration and version constraints in both environment root modules. Pin Terraform >= 1.6.0 and AWS provider ~> 5.0.
@@ -305,14 +311,14 @@ Set up provider configuration and version constraints in both environment root m
 **Technical Spec:** [General Project Parameters](./technical-spec.md#general-project-parameters)
 
 **Acceptance Criteria:**
-- [ ] `versions.tf` in both dev/ and prod/ with required_version >= 1.6.0
-- [ ] AWS provider source and version constraint (~> 5.0) defined
-- [ ] `providers.tf` in both environments configuring AWS provider with `var.aws_region`
-- [ ] `variables.tf` defines aws_region variable (default: ap-southeast-2)
-- [ ] `variables.tf` defines environment variable (dev or prod)
-- [ ] `variables.tf` defines project variable (default: petclinic)
-- [ ] Common tags defined: Project, Environment, ManagedBy=terraform
-- [ ] `terraform validate` passes in both environments
+- [x] `versions.tf` in both dev/ and prod/ with required_version >= 1.6.0
+- [x] AWS provider source and version constraint (~> 5.0) defined
+- [x] `providers.tf` in both environments configuring AWS provider with `var.aws_region`
+- [x] `variables.tf` defines aws_region variable (default: ap-southeast-2)
+- [x] `variables.tf` defines environment variable (dev or prod)
+- [x] `variables.tf` defines project variable (default: petclinic)
+- [x] Common tags defined: Project, Environment, ManagedBy=terraform
+- [x] `terraform validate` passes in both environments
 
 ---
 

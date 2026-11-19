@@ -167,3 +167,8 @@ All infrastructure values (CIDRs, ports, instance sizes, security groups, K8s re
 
 Work is tracked in `docs/jira-backlog.md` (17 epics including Helm + ArgoCD, E-12 removed).
 Dependency chain: E-0 → E-1 → VPC → EKS → K8s → Helm → ArgoCD; VPC → RDS → Secrets → K8s
+
+## Current Status
+
+- **E-1 Foundation & Remote State — ✅ complete** (PETPLAT-1 to 5, merged in PR #2). Remote state is live in ap-southeast-2: S3 bucket `petclinic-terraform-state-{account-id}` + DynamoDB table `petclinic-terraform-locks`; `terraform init` succeeds for dev and prod.
+- **Next: E-2 Networking (VPC)** — start only when explicitly asked.
