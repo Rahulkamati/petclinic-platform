@@ -20,8 +20,8 @@ docs/                                # Architecture docs, runbooks, ADRs
 
 ## Terraform Conventions
 
-- **Provider:** AWS provider ~> 5.0, region eu-central-1
-- **ECR:** Uses `aws_ecr_repository` in eu-central-1 with lifecycle policies, scan-on-push, and configurable tag immutability
+- **Provider:** AWS provider ~> 5.0, region ap-southeast-2
+- **ECR:** Uses `aws_ecr_repository` in ap-southeast-2 with lifecycle policies, scan-on-push, and configurable tag immutability
 - **State:** S3 + DynamoDB locking, key pattern: `petclinic/{env}/terraform.tfstate`
 - **Modules:** All reusable modules in `terraform/modules/`. Environments call modules.
 - **Naming:** `petclinic-{env}-{resource}` (e.g., `petclinic-dev-vpc`, `petclinic-prod-eks`)
@@ -70,12 +70,13 @@ docs/                                # Architecture docs, runbooks, ADRs
 6. **Security groups are the perimeter** — all resources in public subnets (cost optimization for learning), SGs enforce access control
 7. **No terraform destroy without approval** — hooks block this command
 8. **No *.tfvars or .env files committed** — .gitignore enforces this
+9. **ap-southeast-2 is the ONLY allowed region** — the AWS account is pinned to this home region by an AWS-managed SCP; every other region is explicitly denied (AccessDenied). Never create or reference resources in any other region. Availability Zones: `ap-southeast-2a`, `ap-southeast-2b`. Always pass/pin `ap-southeast-2` explicitly in scripts and CLI calls rather than relying on a profile default.
 
 ## AWS Environment Details
 
 | Setting | Dev | Prod |
 |---------|-----|------|
-| Region | eu-central-1 | eu-central-1 |
+| Region | ap-southeast-2 | ap-southeast-2 |
 | K8s namespace | petclinic-dev | petclinic-prod |
 | State key | petclinic/dev/terraform.tfstate | petclinic/prod/terraform.tfstate |
 | RDS instance | db.t4g.micro, single-AZ (free tier) | db.t4g.micro, single-AZ (free tier) |
@@ -102,7 +103,7 @@ docs/                                # Architecture docs, runbooks, ADRs
 - **Target platform:** `linux/arm64` (required for Graviton t4g nodes)
 - Profile: `SPRING_PROFILES_ACTIVE=docker` (set in container)
 - MySQL profile: add `mysql` to active profiles for RDS-backed services
-- ECR repos: `{account}.dkr.ecr.eu-central-1.amazonaws.com/petclinic-{env}/{service-name}`
+- ECR repos: `{account}.dkr.ecr.ap-southeast-2.amazonaws.com/petclinic-{env}/{service-name}`
 - CI/CD builds require `docker buildx` + QEMU for ARM cross-compilation on x86 runners
 
 ## Workflow Commands
@@ -142,7 +143,7 @@ Five MCP servers configured at the project level:
 - **Architecture:** CI (GitHub Actions) + CD (ArgoCD). GitHub Actions NEVER deploys directly.
 - **CI Platform:** GitHub Actions, OIDC federation to AWS (no long-lived credentials)
 - **Image tags:** Commit SHA (`${GITHUB_SHA::7}`), never `latest`
-- **ECR login:** `aws ecr get-login-password --region eu-central-1` (same region as infrastructure)
+- **ECR login:** `aws ecr get-login-password --region ap-southeast-2` (same region as infrastructure)
 - **Image tag update:** CI commits new tag to `helm-values/{service}.yaml` → ArgoCD picks up
 - **Prod gates:** ArgoCD manual sync (not GitHub Environments)
 - **Scanning:** Trivy scan after Docker build, fail on CRITICAL CVEs
