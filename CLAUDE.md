@@ -171,4 +171,6 @@ Dependency chain: E-0 → E-1 → VPC → EKS → K8s → Helm → ArgoCD; VPC �
 ## Current Status
 
 - **E-1 Foundation & Remote State — ✅ complete** (PETPLAT-1 to 5, merged in PR #2). Remote state is live in ap-southeast-2: S3 bucket `petclinic-terraform-state-{account-id}` + DynamoDB table `petclinic-terraform-locks`; `terraform init` succeeds for dev and prod.
-- **Next: E-2 Networking (VPC)** — start only when explicitly asked.
+- **E-2 Networking (VPC) — ✅ complete** (PETPLAT-6, 8–11). `terraform/modules/vpc/` (VPC, 2 public subnets, IGW, route table, locked-down default SG, 4 baseline SGs in `security_groups.tf`). Dev VPC `10.0.0.0/16` is **applied**; prod `10.1.0.0/16` is wired and **plan-only** (not applied). Checkov: 0 failed, skips documented inline.
+  - **E-3 gate:** EKS managed node groups don't attach custom SGs by default — E-3 MUST attach `module.vpc.eks_node_sg_id` via a launch template (`vpc_security_group_ids`) and add `eks_cluster_sg_id` to the cluster `vpc_config`, otherwise RDS (3306 from node SG) and ALB→node rules match nothing.
+- **Next: E-3 EKS Cluster** — start only when explicitly asked.
